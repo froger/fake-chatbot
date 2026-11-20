@@ -1,0 +1,82 @@
+.menu {
+  position: absolute;
+  z-index: 3;
+  background-color: var(--wa-panel);
+  width: max-content;
+  min-width: 24vh;
+  right: 1vh;
+  top: 3.6vh;
+  padding: 0.8vh 0;
+  border-radius: 1vh;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+  display: none;
+  transform-origin: top right;
+}
+
+.showMenu {
+  display: block;
+  animation: menuAnimation 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+
+.menuItems {
+  display: flex;
+  align-items: center;
+  gap: 1.6vh;
+  width: 100%;
+  padding: 1.3vh 2.4vh 1.3vh 2vh;
+  font-size: 1.9vh;
+  color: var(--wa-text);
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  opacity: 0;
+  animation: itemIn 0.2s ease-out forwards;
+}
+
+.menuItems:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.menuItems:disabled {
+  cursor: default;
+  color: var(--wa-muted);
+  opacity: 0.45 !important;
+  animation: none;
+}
+
+.menuIcon {
+  width: 2.4vh;
+  height: 2.4vh;
+  color: var(--wa-muted);
+  flex-shrink: 0;
+}
+
+.menuDivider {
+  height: 1px;
+  margin: 0.6vh 0;
+  background: rgba(134, 150, 160, 0.15);
+}
+
+@keyframes menuAnimation {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes itemIn {
+  from {
+    opacity: 0;
+    transform: translateX(1vh);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

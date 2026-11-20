@@ -1,0 +1,136 @@
+.appBar {
+  background-color: var(--wa-header);
+  height: 7.6vh;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(134, 150, 160, 0.08);
+}
+
+.appBarLeft,
+.appBarRight {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.appBarLeft {
+  flex: 1;
+}
+
+.appBarRight {
+  gap: 0.6vh;
+  padding-right: 0.6vh;
+}
+
+.arrow {
+  color: var(--wa-text);
+  height: 3vh;
+  width: 3vh;
+  margin: 0 0.8vh 0 1.4vh;
+  flex-shrink: 0;
+}
+
+#pp {
+  display: none;
+}
+
+.ppLabel {
+  height: 5vh;
+  flex-shrink: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: box-shadow 0.2s;
+}
+
+.ppLabel:hover {
+  box-shadow: 0 0 0 2px var(--wa-green);
+}
+
+.ppImage {
+  height: 5vh;
+  width: 5vh;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.nameBlock {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1;
+  margin-left: 1.4vh;
+}
+
+.nickname,
+.contactStatus {
+  width: 100%;
+  background-color: transparent;
+  border: 0;
+  border-radius: 4px;
+  padding: 0 0.4vh;
+  margin-left: -0.4vh;
+  text-overflow: ellipsis;
+  transition: background-color 0.2s;
+}
+
+.nickname {
+  color: var(--wa-text);
+  font-size: 2.25vh;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.contactStatus {
+  color: var(--wa-muted);
+  font-size: 1.6vh;
+  line-height: 1.3;
+}
+
+.contactStatus::placeholder {
+  color: var(--wa-muted);
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.nickname:hover,
+.contactStatus:hover,
+.nickname:focus,
+.contactStatus:focus {
+  background-color: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+
+.appBarIcons {
+  width: 3vh;
+  height: 3vh;
+  color: var(--wa-text);
+  margin: 0 1.1vh;
+  display: block;
+  flex-shrink: 0;
+}
+
+.menuBtn {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0.9vh 0;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.menuBtn .appBarIcons {
+  margin: 0 0.9vh;
+}
+
+.menuBtn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.menuBtn.open {
+  background-color: rgba(255, 255, 255, 0.1);
+}

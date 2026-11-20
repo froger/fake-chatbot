@@ -1,0 +1,64 @@
+.conntainer {
+  position: relative;
+  margin: auto;
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media screen and (orientation: landscape) {
+  .conntainer {
+    width: calc(100vh * 0.5625);
+    box-shadow: 0 0 60px rgba(0, 168, 132, 0.08);
+  }
+}
+
+.statusBar {
+  background-color: var(--wa-header);
+  height: 3.6vh;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2.6vh 0 2.6vh;
+}
+
+.statusTime {
+  width: 8vh;
+  background: transparent;
+  border: 0;
+  border-radius: 0.4vh;
+  color: var(--wa-text);
+  font-size: 1.75vh;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusTime:hover,
+.statusTime:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.statusIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.5vh;
+  color: var(--wa-text);
+}
+
+.statusIcons svg {
+  width: 1.9vh;
+  height: 1.9vh;
+}
+
+.phone {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--wa-bg);
+}

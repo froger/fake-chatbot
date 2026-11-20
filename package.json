@@ -1,0 +1,24 @@
+{
+  "name": "fake-chat",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "WhatsApp-style fake chat generator with screenshot and video export.",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource/roboto": "^5.1.0",
+    "html-to-image": "^1.11.11",
+    "mediabunny": "^1.62.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.7"
+  }
+}

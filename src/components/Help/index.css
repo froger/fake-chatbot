@@ -1,0 +1,639 @@
+.help {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2vh;
+  background: rgba(5, 10, 14, 0.72);
+  backdrop-filter: blur(6px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.helpCard {
+  position: relative;
+  width: 100%;
+  max-width: 52vh;
+  padding: 5.4vh 2.6vh 2.4vh;
+  border-radius: 2.4vh;
+  background: linear-gradient(180deg, #1c2a32 0%, #111b21 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  color: var(--wa-text);
+  overflow: hidden;
+  animation: cardIn 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+
+.helpCard::before {
+  content: "";
+  position: absolute;
+  inset: -40% -40% auto auto;
+  width: 40vh;
+  height: 40vh;
+  background: radial-gradient(circle, rgba(0, 168, 132, 0.25), transparent 65%);
+  pointer-events: none;
+}
+
+.skip {
+  position: absolute;
+  top: 1.6vh;
+  right: 1.8vh;
+  z-index: 1;
+  background: none;
+  border: 0;
+  color: var(--wa-muted);
+  font-size: 1.6vh;
+  cursor: pointer;
+  padding: 0.6vh 1vh;
+  border-radius: 1vh;
+}
+
+.skip:hover {
+  color: var(--wa-text);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stepBody {
+  text-align: center;
+}
+
+.stepBody.fromRight {
+  animation: inRight 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.stepBody.fromLeft {
+  animation: inLeft 0.35s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.stepBody h2 {
+  margin-top: 2.4vh;
+  font-size: 2.7vh;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.stepBody p {
+  margin: 1.2vh auto 0;
+  max-width: 44vh;
+  font-size: 1.75vh;
+  line-height: 1.55;
+  color: #aebac1;
+  min-height: 8.2vh;
+}
+
+.helpFooter {
+  margin-top: 2.6vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dots {
+  display: flex;
+  gap: 0.8vh;
+}
+
+.dot {
+  width: 0.9vh;
+  height: 0.9vh;
+  border: 0;
+  border-radius: 1vh;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  padding: 0;
+  transition: width 0.3s, background-color 0.3s;
+}
+
+.dot.active {
+  width: 2.6vh;
+  background: var(--wa-green);
+}
+
+.navBtn {
+  border: 0;
+  border-radius: 3vh;
+  padding: 1.1vh 2.2vh;
+  font-size: 1.7vh;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.2s, background-color 0.2s;
+}
+
+.navBtn:active {
+  transform: scale(0.95);
+}
+
+.navBtn.primary {
+  background: var(--wa-green);
+  color: #0b141a;
+}
+
+.navBtn.primary:hover {
+  filter: brightness(1.1);
+}
+
+.navBtn.ghost {
+  background: transparent;
+  color: var(--wa-muted);
+}
+
+.navBtn.ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--wa-text);
+}
+
+/* ---------- Scenes ---------- */
+
+.scene {
+  position: relative;
+  height: 24vh;
+  border-radius: 1.6vh;
+  background: #0b141a url("../../images/whatsappLight.jpg") center / cover;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.6vh;
+  text-align: left;
+  font-size: 1.6vh;
+}
+
+.mb {
+  width: fit-content;
+  max-width: 80%;
+  padding: 0.7vh 1.1vh;
+  border-radius: 1vh;
+  margin: 0.5vh 0;
+  font-size: 1.55vh;
+  color: var(--wa-text);
+}
+
+.mb.in {
+  background: var(--wa-in);
+  border-top-left-radius: 0;
+}
+
+.mb.out {
+  background: var(--wa-out);
+  border-top-right-radius: 0;
+  margin-left: auto;
+}
+
+/* Welcome */
+.sceneWelcome {
+  align-items: center;
+  background: radial-gradient(circle at 50% 120%, rgba(0, 168, 132, 0.35), transparent 60%),
+    #0b141a;
+}
+
+.miniPhone {
+  width: 24vh;
+  height: 21vh;
+  border-radius: 1.6vh;
+  background: #0b141a url("../../images/whatsappLight.jpg") center / cover;
+  border: 0.4vh solid #2a3942;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: float 4s ease-in-out infinite;
+}
+
+.miniBar {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+  padding: 0.8vh;
+  background: var(--wa-header);
+}
+
+.miniAvatar {
+  width: 2.2vh;
+  height: 2.2vh;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8696a0, #54656f);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.miniAvatar.big {
+  width: 4.6vh;
+  height: 4.6vh;
+}
+
+.miniName {
+  width: 7vh;
+  height: 1vh;
+  border-radius: 1vh;
+  background: rgba(233, 237, 239, 0.6);
+}
+
+.miniChat {
+  flex: 1;
+  padding: 0.6vh 0.8vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.miniChat .mb {
+  font-size: 1.2vh;
+  padding: 0.5vh 0.8vh;
+  margin: 0.3vh 0;
+  opacity: 0;
+  animation: chatLoop 6s infinite;
+}
+
+.d1 { animation-delay: 0s !important; }
+.d2 { animation-delay: 0.6s !important; }
+.d3 { animation-delay: 1.2s !important; }
+.d4 { animation-delay: 1.8s !important; }
+
+/* Profile */
+.miniHeader {
+  display: flex;
+  align-items: center;
+  gap: 1.2vh;
+  padding: 1.4vh;
+  border-radius: 1.2vh;
+  background: var(--wa-input);
+  font-size: 2vh;
+}
+
+.miniArrow {
+  color: var(--wa-text);
+}
+
+.miniNameCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.miniStatus {
+  font-size: 1.3vh;
+  color: var(--wa-muted);
+}
+
+.typing {
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--wa-green);
+  font-weight: 500;
+  animation: typeName 3.6s steps(4) infinite;
+}
+
+.miniDots {
+  color: var(--wa-text);
+  padding: 0 0.6vh;
+  border-radius: 50%;
+}
+
+.pulseRing {
+  position: relative;
+}
+
+.pulseRing::after {
+  content: "";
+  position: absolute;
+  inset: -0.6vh;
+  border-radius: 50%;
+  border: 2px solid var(--wa-green);
+  animation: ring 1.8s ease-out infinite;
+}
+
+.pulseRing.delay::after {
+  animation-delay: 0.9s;
+}
+
+.callouts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8vh;
+  margin-top: 1.6vh;
+}
+
+.callout {
+  width: fit-content;
+  padding: 0.6vh 1.2vh;
+  border-radius: 2vh;
+  background: rgba(0, 168, 132, 0.18);
+  color: #7ae3c3;
+  font-size: 1.45vh;
+  opacity: 0;
+  animation: pop 0.4s ease-out forwards;
+}
+
+.c1 { animation-delay: 0.3s; }
+.c2 { animation-delay: 0.6s; }
+
+/* Type */
+.miniChatArea {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-bottom: 1vh;
+}
+
+.miniChatArea.tall {
+  justify-content: center;
+}
+
+.sendLoop {
+  opacity: 0;
+  animation: sendLoop 4s infinite;
+}
+
+.miniInput {
+  display: flex;
+  align-items: center;
+  gap: 0.8vh;
+}
+
+.miniToggle {
+  padding: 0.9vh 1.2vh;
+  border-radius: 2vh;
+  background: var(--wa-out);
+  font-size: 1.3vh;
+  font-weight: 500;
+}
+
+.miniField {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 3.6vh;
+  padding: 0 1.2vh;
+  border-radius: 2vh;
+  background: var(--wa-input);
+  font-size: 1.5vh;
+  overflow: hidden;
+}
+
+.typeLoop {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+  animation: typeMsg 4s steps(13) infinite;
+}
+
+.caret {
+  width: 2px;
+  height: 1.8vh;
+  background: var(--wa-green);
+  animation: blink 0.8s step-end infinite;
+}
+
+.miniSend {
+  width: 3.6vh;
+  height: 3.6vh;
+  border-radius: 50%;
+  background: var(--wa-green);
+  display: grid;
+  place-items: center;
+  font-size: 1.6vh;
+  color: var(--wa-on-green);
+  animation: pressSend 4s infinite;
+}
+
+.keys {
+  margin-top: 1.2vh;
+  font-size: 1.35vh;
+  color: var(--wa-muted);
+  text-align: center;
+}
+
+kbd {
+  font-family: inherit;
+  font-size: 1.2vh;
+  padding: 0.2vh 0.6vh;
+  border-radius: 0.5vh;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom-width: 2px;
+  color: var(--wa-text);
+}
+
+.sep {
+  margin: 0 0.4vh;
+}
+
+/* Switch sides */
+.flipBubble {
+  position: relative;
+  width: fit-content;
+  padding: 1vh 1.4vh;
+  border-radius: 1vh;
+  font-size: 1.6vh;
+  color: var(--wa-text);
+  background: var(--wa-out);
+  align-self: flex-end;
+  animation: flipSide 4s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+}
+
+.tap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 3vh;
+  height: 3vh;
+  margin: -1.5vh 0 0 -1.5vh;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  opacity: 0;
+  animation: tap 4s ease-out infinite;
+}
+
+.tap.second {
+  animation-name: tap2;
+}
+
+.switchRow {
+  display: flex;
+  align-items: center;
+  gap: 1.2vh;
+  padding: 1vh 1.2vh;
+  border-radius: 1.2vh;
+  background: rgba(17, 27, 33, 0.9);
+  font-size: 1.4vh;
+  color: #aebac1;
+}
+
+.miniSwitch {
+  position: relative;
+  flex-shrink: 0;
+  width: 4.6vh;
+  height: 2.4vh;
+  border-radius: 2vh;
+  animation: switchBg 4s infinite;
+}
+
+.knob {
+  position: absolute;
+  top: 0.4vh;
+  width: 1.6vh;
+  height: 1.6vh;
+  border-radius: 50%;
+  background: #fff;
+  animation: switchKnob 4s cubic-bezier(0.3, 1.4, 0.5, 1) infinite;
+}
+
+/* Export */
+.miniMenu {
+  width: 78%;
+  margin-left: auto;
+  padding: 0.6vh 0;
+  border-radius: 1vh;
+  background: var(--wa-panel);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transform-origin: top right;
+  animation: menuOpen 5s infinite;
+}
+
+.mi {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  padding: 0.9vh 1.4vh;
+  font-size: 1.5vh;
+}
+
+.mi em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 1.15vh;
+  color: var(--wa-muted);
+}
+
+.m1 { animation: highlight 5s infinite 0.8s; }
+.m2 { animation: highlight 5s infinite 1.6s; }
+.m3 { animation: highlight 5s infinite 2.4s; }
+.m4 { animation: highlight 5s infinite 3.2s; }
+
+.flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  pointer-events: none;
+  animation: flash 5s infinite 0.8s;
+}
+
+/* ---------- Keyframes ---------- */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+}
+
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(4vh) scale(0.95);
+  }
+}
+
+@keyframes inRight {
+  from { opacity: 0; transform: translateX(5vh); }
+}
+
+@keyframes inLeft {
+  from { opacity: 0; transform: translateX(-5vh); }
+}
+
+@keyframes float {
+  50% { transform: translateY(-0.8vh); }
+}
+
+@keyframes chatLoop {
+  0% { opacity: 0; transform: translateY(1vh) scale(0.9); }
+  8%, 85% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+
+@keyframes typeName {
+  0% { width: 0; }
+  50%, 90% { width: 4.4ch; }
+  100% { width: 0; }
+}
+
+@keyframes ring {
+  0% { transform: scale(0.85); opacity: 1; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: translateY(1vh); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes typeMsg {
+  0% { width: 0; }
+  45%, 55% { width: 13ch; }
+  56%, 100% { width: 0; }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes pressSend {
+  0%, 52% { transform: scale(1); }
+  55% { transform: scale(0.8); }
+  60%, 100% { transform: scale(1); }
+}
+
+@keyframes sendLoop {
+  0%, 55% { opacity: 0; transform: translateY(2vh) scale(0.9); }
+  62%, 92% { opacity: 1; transform: none; }
+  100% { opacity: 0; }
+}
+
+@keyframes flipSide {
+  0%, 30% { align-self: flex-end; background: var(--wa-out); transform: none; opacity: 1; }
+  42% { align-self: flex-end; background: var(--wa-out); transform: translateX(10%); opacity: 0; }
+  43% { align-self: flex-start; background: var(--wa-in); transform: translateX(-10%); opacity: 0; }
+  55%, 100% { align-self: flex-start; background: var(--wa-in); transform: none; opacity: 1; }
+}
+
+@keyframes tap {
+  0%, 10% { opacity: 0; transform: scale(0.3); }
+  14% { opacity: 1; transform: scale(0.6); }
+  22%, 100% { opacity: 0; transform: scale(1.6); }
+}
+
+@keyframes tap2 {
+  0%, 20% { opacity: 0; transform: scale(0.3); }
+  24% { opacity: 1; transform: scale(0.6); }
+  32%, 100% { opacity: 0; transform: scale(1.6); }
+}
+
+@keyframes switchBg {
+  0%, 30% { background: var(--wa-out); }
+  45%, 100% { background: #3b4a54; }
+}
+
+@keyframes switchKnob {
+  0%, 30% { left: calc(100% - 2vh); }
+  45%, 100% { left: 0.4vh; }
+}
+
+@keyframes menuOpen {
+  0% { opacity: 0; transform: scale(0.8); }
+  6%, 92% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: scale(0.95); }
+}
+
+@keyframes highlight {
+  0%, 12% { background: rgba(0, 168, 132, 0.22); }
+  20%, 100% { background: transparent; }
+}
+
+@keyframes flash {
+  0%, 1% { opacity: 0; }
+  3% { opacity: 0.35; }
+  8%, 100% { opacity: 0; }
+}

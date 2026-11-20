@@ -1,0 +1,233 @@
+.messageBlock {
+  display: flex;
+  flex-direction: column;
+  max-width: 78%;
+  margin: 0.35vh 2vh;
+}
+
+.messageBlock.first {
+  margin-top: 1.2vh;
+}
+
+.messageBlock.blockLeft {
+  align-items: flex-start;
+}
+
+.messageBlock.blockRight {
+  align-items: flex-end;
+  margin-left: auto;
+}
+
+.messageBlock .message {
+  margin: 0;
+  max-width: 100%;
+}
+
+/* Interactive reply card: body + buttons share one bubble. */
+.messageBlock.hasReplies {
+  min-width: min(78%, 28vh);
+}
+
+.messageBlock.hasReplies .message.withReplies {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.messageBlock.hasReplies .messageBody {
+  padding: 0.75vh 1.1vh 0.9vh;
+}
+
+.messageBlock.hasReplies .imageMsg .messageBody {
+  padding: 0.4vh;
+}
+
+.messageBlock.blockRight .message.mr {
+  margin-left: 0;
+}
+
+.quickReplies {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.quickReply {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7vh;
+  width: 100%;
+  border: 0;
+  border-top: 1px solid rgba(134, 150, 160, 0.22);
+  border-radius: 0;
+  padding: 1.35vh 1.4vh;
+  background: transparent;
+  color: #00a884;
+  font-size: 1.9vh;
+  font-weight: 500;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.quickReply:last-child {
+  border-bottom-left-radius: 1vh;
+  border-bottom-right-radius: 1vh;
+}
+
+.quickReplyIcon {
+  width: 1.9vh;
+  height: 1.9vh;
+  flex-shrink: 0;
+}
+
+.quickReplyText {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.quickReply:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.quickReply:active {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.message {
+  position: relative;
+  display: flow-root;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 0.75vh 1.1vh 0.9vh;
+  margin: 0.35vh 2vh;
+  border-radius: 1vh;
+  width: fit-content;
+  max-width: 78%;
+  color: var(--wa-text);
+  font-size: 2vh;
+  line-height: 1.35;
+  box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+  user-select: none;
+  cursor: pointer;
+  animation: bubbleIn 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateY(2vh) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ml {
+  background: var(--wa-in);
+  transform-origin: left bottom;
+}
+
+.mr {
+  background: var(--wa-out);
+  margin-left: auto;
+  transform-origin: right bottom;
+}
+
+/* Bubble tail on the first message of each group, like WhatsApp. */
+.ml.first {
+  border-top-left-radius: 0;
+}
+.mr.first {
+  border-top-right-radius: 0;
+}
+.message.first::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 1vh;
+  height: 1.3vh;
+}
+.ml.first::before {
+  left: -0.95vh;
+  background: var(--wa-in);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+.mr.first::before {
+  right: -0.95vh;
+  background: var(--wa-out);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.meta {
+  float: right;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4vh;
+  margin: 0.9vh 0 -0.5vh 1.2vh;
+  font-size: 1.35vh;
+  line-height: 1;
+  color: rgba(233, 237, 239, 0.6);
+  white-space: nowrap;
+}
+
+.ticks {
+  width: 1.8vh;
+  height: 1.25vh;
+  color: var(--wa-tick);
+}
+
+/* ---------- Image messages ---------- */
+
+.imageMsg {
+  padding: 0.4vh;
+  width: 68%;
+  max-width: 34vh;
+}
+
+.photo {
+  position: relative;
+  width: 100%;
+  border-radius: 0.8vh;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+}
+
+/* Time + ticks sit on the photo with a soft shadow, like WhatsApp. */
+.photoMeta {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 4.5vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 0 1vh 0.8vh;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.45), transparent);
+}
+
+.photoMeta .meta {
+  float: none;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.photoMeta .ticks {
+  color: var(--wa-tick);
+}
+
+.caption {
+  display: flow-root;
+  padding: 0.6vh 0.7vh 0.4vh;
+}

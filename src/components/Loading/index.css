@@ -1,0 +1,96 @@
+/* Blocks clicks on the chat while the video renders; the chat stays visible. */
+.loading {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 2vh;
+  animation: slideUp 0.3s ease-out;
+}
+
+.cancelBtn {
+  background: none;
+  border: 0;
+  color: var(--wa-green);
+  font-size: 1.6vh;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.4vh 0.8vh;
+  border-radius: 0.6vh;
+}
+
+.cancelBtn:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.loadingCard {
+  pointer-events: auto;
+  width: 100%;
+  padding: 2vh 2.4vh;
+  border-radius: 2vh;
+  background: rgba(17, 27, 33, 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  color: var(--wa-text);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 1.4vh;
+  row-gap: 0.6vh;
+}
+
+.loadingCard h2 {
+  font-size: 2vh;
+  font-weight: 500;
+}
+
+.loadingCard p {
+  grid-column: 1 / -1;
+  font-size: 1.5vh;
+  color: var(--wa-muted);
+}
+
+.recDot {
+  width: 1.4vh;
+  height: 1.4vh;
+  border-radius: 50%;
+  background: #f15c6d;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.loadingBar {
+  grid-column: 1 / 3;
+  height: 0.8vh;
+  border-radius: 1vh;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.loadingFill {
+  height: 100%;
+  border-radius: 1vh;
+  background: linear-gradient(90deg, var(--wa-green), #25d366);
+  transition: width 0.15s linear;
+}
+
+.loadingPct {
+  font-size: 1.5vh;
+  font-variant-numeric: tabular-nums;
+  color: var(--wa-muted);
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(4vh);
+  }
+}
