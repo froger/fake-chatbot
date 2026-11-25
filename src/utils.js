@@ -1,9 +1,69 @@
 import { getFontEmbedCSS } from "html-to-image";
 
-// Seconds between messages in replays and videos.
+// Pause after a bubble appears, before the next typing/recording indicator.
+export const AFTER_MESSAGE_GAP = 0.75;
+// Kept for anything that still expects a fixed beat between messages.
 export const MESSAGE_GAP = 2;
 
+// Phone typing pace for indicators (~40–50 WPM) → ~4 characters per second.
+export const SLOW_CHARS_PER_SEC = 4;
+export const TYPING_MIN_SEC = 0.45;
+export const TYPING_MAX_SEC = 3.5;
+
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * WhatsApp-style pre-message activity, or null (quick replies / image-only).
+ * @returns {{ kind: 'typing'|'recording', self: boolean, duration: number } | null}
+ */
+export const messageIndicator = (message) => {
+  if (!message || message.fromReply) return null;
+  if (message.audio?.durationSec != null) {
+    const d = Number(message.audio.durationSec) || 0;
+    return {
+      kind: "recording",
+      self: message.self === true,
+      duration: Math.min(60, Math.max(0.5, d)),
+    };
+  }
+  const text = String(message.text ?? "").trim();
+  if (!text) return null;
+  const duration = Math.min(
+    TYPING_MAX_SEC,
+    Math.max(TYPING_MIN_SEC, text.length / SLOW_CHARS_PER_SEC)
+  );
+  return { kind: "typing", self: message.self === true, duration };
+};
+
+/**
+ * Build appear times for chat-story video / replay.
+ * @returns {{ appear: number[], indicators: (object|null)[], duration: number }}
+ */
+export const buildChatTimeline = (
+  messages,
+  { leadIn = 1, tail = 2.5, afterGap = AFTER_MESSAGE_GAP } = {}
+) => {
+  const appear = [];
+  const indicators = [];
+  let t = leadIn;
+  messages.forEach((msg, i) => {
+    const ind = messageIndicator(msg);
+    if (ind) {
+      indicators.push({
+        start: t,
+        end: t + ind.duration,
+        kind: ind.kind,
+        self: ind.self,
+      });
+      t += ind.duration;
+    } else {
+      indicators.push(null);
+    }
+    appear.push(t);
+    if (i < messages.length - 1) t += afterGap;
+  });
+  return { appear, indicators, duration: (messages.length ? t : leadIn) + tail };
+};
 
 export const newId = () =>
   globalThis.crypto?.randomUUID?.() ??

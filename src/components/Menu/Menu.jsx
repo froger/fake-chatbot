@@ -6,7 +6,8 @@ import {
   exportOptions,
   downloadUrl,
   withPinnedScroll,
-  MESSAGE_GAP,
+  AFTER_MESSAGE_GAP,
+  messageIndicator,
 } from "../../utils";
 import "./index.css";
 
@@ -43,6 +44,7 @@ const Menu = () => {
     setShowHelp,
     recordingRef,
     videoAbortRef,
+    setPresence,
   } = useContext(AppContext);
   const menuRef = useRef();
 
@@ -67,10 +69,17 @@ const Menu = () => {
     setIsMenuOpen(false);
     const tmpMessageList = [...messageList];
     setMessageList([]);
+    setPresence(null);
     for (const message of tmpMessageList) {
-      await sleep(MESSAGE_GAP * 1000);
+      const ind = messageIndicator(message);
+      if (ind) {
+        setPresence({ kind: ind.kind, self: ind.self });
+        await sleep(ind.duration * 1000);
+        setPresence(null);
+      }
       setMessageList((p) => [...p, message]);
       playBip(message.self === true);
+      await sleep(AFTER_MESSAGE_GAP * 1000);
     }
   };
 
@@ -101,6 +110,7 @@ const Menu = () => {
         phoneEl: appRef.current,
         messages: [...messageList],
         setMessageList,
+        setPresence,
         onProgress: setLoadPercent,
         signal: controller.signal,
       });
@@ -125,6 +135,7 @@ const Menu = () => {
 
   const clearChat = () => {
     setIsMenuOpen(false);
+    setPresence(null);
     setMessageList([]);
   };
 

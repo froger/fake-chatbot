@@ -21,7 +21,7 @@ const ChatScreen = () => {
   const [recording, setRecording] = useState(false);
   const [recordSec, setRecordSec] = useState(0);
 
-  const { messageList, setMessageList, playBip, lastMessageRef } =
+  const { messageList, setMessageList, playBip, lastMessageRef, presence } =
     useContext(AppContext);
 
   const fileInputRef = useRef();
@@ -204,7 +204,7 @@ const ChatScreen = () => {
       />
       <div className="chatMessages">
         <div className="chatInner">
-        {messageList.length === 0 && !recording && (
+        {messageList.length === 0 && !recording && !presence && (
           <div className="emptyHint no-export">
             Type a message below and press <kbd>Enter</kbd>.
             <br />
@@ -218,7 +218,7 @@ const ChatScreen = () => {
             As <b>Them</b>, add up to three quick replies (one per line).
           </div>
         )}
-        {messageList.length > 0 && <div className="dayChip">Today</div>}
+        {(messageList.length > 0 || presence) && <div className="dayChip">Today</div>}
         {messageList.map((message, index) => (
           <ChatMessage
             text={message.text}
@@ -230,9 +230,38 @@ const ChatScreen = () => {
             msgId={message.msgId}
             left={message.self !== true}
             first={index === 0 || messageList[index - 1].self !== message.self}
+            last={
+              index === messageList.length - 1 ||
+              messageList[index + 1].self !== message.self
+            }
             componentRef={index === messageList.length - 1 ? lastMessageRef : null}
           />
         ))}
+        {/* Them typing: small WA-style 3-dot bubble (left). */}
+        {presence && presence.self !== true && presence.kind === "typing" && (
+          <div className="messageBlock blockLeft presenceBlock">
+            <div className="typingBubble ml">
+              {[0, 1, 2].map((i) => {
+                const phase = presence.phase;
+                let opacity;
+                if (phase != null) {
+                  const cycle = (phase * 4.4 + i * 0.09) % 0.6;
+                  opacity =
+                    cycle < 0.22
+                      ? 0.35 + 0.65 * Math.sin((cycle / 0.22) * Math.PI)
+                      : 0.35;
+                }
+                return (
+                  <span
+                    key={i}
+                    className="typingDot"
+                    style={opacity != null ? { opacity } : undefined}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
         </div>
       </div>
 
@@ -253,6 +282,14 @@ const ChatScreen = () => {
           <span className="recordDot" />
           <span className="recordTime">{formatAudioDuration(recordSec)}</span>
           <span className="recordHint">Release to send</span>
+        </div>
+      )}
+
+      {/* You recording during replay/video (exportable; them use AppBar status). */}
+      {!recording && presence?.self === true && presence.kind === "recording" && (
+        <div className="recordBar presenceRecord" aria-hidden="true">
+          <span className="recordDot" />
+          <span className="recordTime">Recording…</span>
         </div>
       )}
 

@@ -10,10 +10,13 @@ import {
 import "./index.css";
 
 const AppBar = () => {
-  const { isMenuOpen, setIsMenuOpen } = useContext(AppContext);
+  const { isMenuOpen, setIsMenuOpen, presence, demoContact } =
+    useContext(AppContext);
   const [pp, setPp] = useState(DEFAULT_AVATAR);
-  const [nickname, setNickname] = useState("Nickname");
-  const [status, setStatus] = useState("online");
+  const [nickname, setNickname] = useState(
+    () => demoContact?.nickname ?? "Nickname"
+  );
+  const [status, setStatus] = useState(() => demoContact?.status ?? "online");
 
   const menuClick = (event) => {
     event.stopPropagation();
@@ -25,6 +28,12 @@ const AppBar = () => {
       setPp(URL.createObjectURL(event.target.files[0]));
     }
   };
+
+  // App bar only shows recording (typing uses the chat bubble instead).
+  const themRecording =
+    presence && presence.self !== true && presence.kind === "recording"
+      ? "recording audio..."
+      : null;
 
   return (
     <div className="appBar">
@@ -44,16 +53,20 @@ const AppBar = () => {
             aria-label="Contact name"
             spellCheck={false}
           />
-          <input
-            className={`contactStatus ${status ? "" : "no-export"}`}
-            type="text"
-            placeholder="add status (optional)"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            title="Click to edit the status line (leave empty to hide)"
-            aria-label="Contact status"
-            spellCheck={false}
-          />
+          {themRecording ? (
+            <span className="presenceStatus recording">{themRecording}</span>
+          ) : (
+            <input
+              className={`contactStatus ${status ? "" : "no-export"}`}
+              type="text"
+              placeholder="add status (optional)"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              title="Click to edit the status line (leave empty to hide)"
+              aria-label="Contact status"
+              spellCheck={false}
+            />
+          )}
         </div>
       </div>
       <div className="appBarRight">

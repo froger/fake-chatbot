@@ -89,7 +89,7 @@ const ExportScene = () => (
         <span>🎬</span>Save video<em>replays the chat</em>
       </div>
       <div className="mi m3">
-        <span>🔁</span>Replay chat<em>2s per message</em>
+        <span>🔁</span>Replay chat<em>typing + timing</em>
       </div>
       <div className="mi m4">
         <span>❔</span>How to use<em>this guide</em>
@@ -122,7 +122,7 @@ const steps = [
   },
   {
     title: "Export it",
-    text: "Open the ⋮ menu at the top right to take a screenshot, record a video, replay the chat or clear it. You can reopen this guide there anytime.",
+    text: "Open the ⋮ menu at the top right to take a screenshot, record a video, replay the chat or clear it. Replay and video show typing or recording indicators timed to each message (quick replies appear instantly). You can reopen this guide there anytime.",
     Scene: ExportScene,
   },
 ];

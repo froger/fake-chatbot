@@ -9,6 +9,7 @@ import Loading from "./components/Loading/Loading";
 import Menu from "./components/Menu/Menu";
 import AppBar from "./components/AppBar/AppBar";
 import Help from "./components/Help/Help";
+import { isDemoMode, buildDemoMessages, demoContact } from "./demoSeed";
 
 const HELP_SEEN_KEY = "fake-chat:help-seen";
 
@@ -24,17 +25,25 @@ export const AppContext = createContext();
 function App() {
   const appRef = useRef();
   const lastMessageRef = useRef();
+  const demo = isDemoMode();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [messageList, setMessageList] = useState([]);
+  const [messageList, setMessageList] = useState(() =>
+    demo ? buildDemoMessages() : []
+  );
   const [showLoading, setShowLoading] = useState(false);
   const [loadPercent, setLoadPercent] = useState(0);
-  const [showHelp, setShowHelp] = useState(() => !readHelpSeen());
+  const [showHelp, setShowHelp] = useState(() => (demo ? false : !readHelpSeen()));
   const [clockText, setClockText] = useState(() =>
-    new Date()
-      .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
-      .replace(/\s?[AP]M$/i, "")
+    demo
+      ? "3:52"
+      : new Date()
+          .toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+          .replace(/\s?[AP]M$/i, "")
   );
+  // Replay/video: WhatsApp-style typing / recording presence.
+  // { kind: 'typing'|'recording', self: boolean, phase?: number } | null
+  const [presence, setPresence] = useState(null);
 
   const closeHelp = () => {
     setShowHelp(false);
@@ -74,6 +83,9 @@ function App() {
         closeHelp,
         recordingRef,
         videoAbortRef,
+        presence,
+        setPresence,
+        demoContact: demo ? demoContact : null,
       }}
     >
       <div className="conntainer">

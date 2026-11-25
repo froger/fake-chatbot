@@ -28,9 +28,16 @@
   min-width: min(78%, 28vh);
 }
 
-.messageBlock.hasReplies .message {
+/* Text+replies share one card width; audio keeps its own capped width. */
+.messageBlock.hasReplies .message:not(.audioMsg) {
   width: 100%;
   max-width: none;
+}
+
+.messageBlock.hasReplies .message {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 0;
 }
 
 .messageBlock.blockRight .message.mr {
@@ -40,8 +47,8 @@
 .quickReplies {
   display: flex;
   flex-direction: column;
-  gap: 0.4vh;
-  margin-top: 0.4vh;
+  gap: 0;
+  margin: 0;
   width: 100%;
 }
 
@@ -52,15 +59,20 @@
   gap: 0.7vh;
   width: 100%;
   border: 0;
-  border-radius: 0.9vh;
-  padding: 1.25vh 1.4vh;
+  border-radius: 0;
+  padding: 1.15vh 1.4vh;
   background: var(--wa-in);
-  color: #00a884;
+  color: var(--wa-green);
   font-size: 1.9vh;
   font-weight: 500;
   line-height: 1.25;
-  box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
+  box-shadow: none;
+  border-top: 1px solid rgba(134, 150, 160, 0.14);
   cursor: pointer;
+}
+
+.quickReply:last-child {
+  border-radius: 0 0 0.9vh 0.9vh;
 }
 
 .quickReplyIcon {
@@ -124,29 +136,45 @@
   transform-origin: right bottom;
 }
 
-/* Bubble tail on the first message of each group, like WhatsApp. */
-.ml.first {
-  border-top-left-radius: 0;
+/* Bubble tail on the last message of each group, bottom corner.
+   When quick replies attach under the bubble, put the tail on the last reply. */
+.messageBlock:not(.hasReplies) .ml.last {
+  border-bottom-left-radius: 0;
 }
-.mr.first {
-  border-top-right-radius: 0;
+.messageBlock:not(.hasReplies) .mr.last {
+  border-bottom-right-radius: 0;
 }
-.message.first::before {
+.messageBlock:not(.hasReplies) .message.last::before {
   content: "";
   position: absolute;
-  top: 0;
+  bottom: 0;
   width: 1vh;
   height: 1.3vh;
 }
-.ml.first::before {
+.messageBlock:not(.hasReplies) .ml.last::before {
   left: -0.95vh;
   background: var(--wa-in);
-  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
 }
-.mr.first::before {
+.messageBlock:not(.hasReplies) .mr.last::before {
   right: -0.95vh;
   background: var(--wa-out);
-  clip-path: polygon(0 0, 100% 0, 0 100%);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+.messageBlock.hasReplies.blockLeft .quickReply:last-child {
+  border-bottom-left-radius: 0;
+  position: relative;
+}
+.messageBlock.hasReplies.blockLeft .quickReply:last-child::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -0.95vh;
+  width: 1vh;
+  height: 1.3vh;
+  background: var(--wa-in);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
 }
 
 .meta {
@@ -221,24 +249,79 @@
 /* ---------- Voice notes (WhatsApp Android dark) ---------- */
 
 .audioMsg {
-  padding: 0.7vh 1vh 0.7vh 0.7vh;
-  width: auto;
-  max-width: 78%;
-  min-width: min(78%, 28vh);
+  --voice-size: 3.6vh;
+  --voice-gap: 1vh;
+  padding: 0.7vh 1vh 0.55vh 0.7vh;
+  /* WhatsApp voice notes are compact — not full chat width. */
+  width: 24vh;
+  max-width: 68%;
+  min-width: 20vh;
 }
 
-.voiceNote {
-  display: flex;
-  align-items: center;
-  gap: 1vh;
+/* Quick replies under an audio bubble match that bubble’s width. */
+.messageBlock.hasReplies:has(.audioMsg) {
+  width: fit-content;
+  max-width: 68%;
   min-width: 0;
+}
+
+/*
+ * Grid:
+ *   incoming:  play | wave | avatar
+ *              [dur ........................ time]
+ *   outgoing:  avatar | play | wave
+ *                          [dur ........ time→]
+ */
+.voiceNote {
+  display: grid;
+  align-items: center;
+  column-gap: var(--voice-gap);
+  row-gap: 0.25vh;
+  min-width: 0;
+}
+
+.voiceIncoming {
+  grid-template-columns: var(--voice-size) minmax(0, 1fr) var(--voice-size);
+  grid-template-areas:
+    "play wave avatar"
+    "foot foot foot";
+}
+
+.voiceOutgoing {
+  grid-template-columns: var(--voice-size) var(--voice-size) minmax(0, 1fr);
+  grid-template-areas:
+    "avatar play wave"
+    ".      .    foot";
+}
+
+.voicePlayCol {
+  grid-area: play;
+  width: var(--voice-size);
+  height: var(--voice-size);
+}
+
+.voiceWave {
+  grid-area: wave;
+}
+
+.voiceAvatar {
+  grid-area: avatar;
+}
+
+.voiceFooter {
+  grid-area: foot;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8vh;
+  min-width: 0;
+  line-height: 1;
 }
 
 .voiceAvatar {
   position: relative;
-  flex-shrink: 0;
-  width: 5.2vh;
-  height: 5.2vh;
+  width: var(--voice-size);
+  height: var(--voice-size);
 }
 
 .voiceAvatar img {
@@ -250,98 +333,101 @@
   -webkit-user-drag: none;
 }
 
-.voiceMicBadge {
+/* Mic overlay: icon only, tick blue (no badge circle). */
+.voiceMicIcon {
   position: absolute;
   right: -0.15vh;
   bottom: -0.15vh;
-  width: 2vh;
-  height: 2vh;
-  border-radius: 50%;
-  background: var(--wa-green);
-  color: var(--wa-on-green);
-  display: grid;
-  place-items: center;
-  box-shadow: 0 0 0 0.2vh var(--wa-in);
-}
-
-.mr.audioMsg .voiceMicBadge {
-  box-shadow: 0 0 0 0.2vh var(--wa-out);
-}
-
-.voiceMicIcon {
-  width: 1.25vh;
-  height: 1.25vh;
+  width: 1.5vh;
+  height: 1.5vh;
+  color: var(--wa-tick);
   display: block;
-}
-
-.voiceMain {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  display: flow-root;
-  padding-bottom: 0.2vh;
-}
-
-.voiceRow {
-  display: flex;
-  align-items: center;
-  gap: 1vh;
-  min-width: 0;
+  filter: drop-shadow(0 0 0.15vh rgba(11, 20, 26, 0.85));
 }
 
 .voicePlay {
-  flex-shrink: 0;
-  width: 3.6vh;
-  height: 3.6vh;
+  width: var(--voice-size);
+  height: var(--voice-size);
   border-radius: 50%;
-  background: rgba(233, 237, 239, 0.92);
-  color: #144d37;
+  background: var(--wa-green);
+  color: #fff;
   display: grid;
   place-items: center;
-}
-
-.ml.audioMsg .voicePlay {
-  color: #202c33;
 }
 
 .voicePlayIcon {
   width: 2vh;
   height: 2vh;
   display: block;
-  margin-left: 0.2vh;
+  transform: translateX(-1px);
 }
 
 .voiceWave {
-  flex: 1;
-  min-width: 12vh;
-  height: 2.8vh;
+  position: relative;
+  min-width: 0;
+  height: var(--voice-size);
   display: flex;
   align-items: center;
   gap: 0.18vh;
+  margin: 0;
+}
+
+/* Scrubber cursor — same blue as read ticks. */
+.voiceScrub {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1.1vh;
+  height: 1.1vh;
+  margin-top: -0.55vh;
+  border-radius: 50%;
+  background: var(--wa-tick);
+  box-shadow: 0 0 0 0.12vh rgba(11, 20, 26, 0.35);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .voiceSpike {
   flex: 1 1 0;
-  min-width: 0.18vh;
-  max-width: 0.28vh;
-  border-radius: 0.08vh;
-  background: var(--wa-muted);
+  min-width: 0.2vh;
+  max-width: 0.35vh;
+  border-radius: 0.12vh;
+  background: var(--wa-wave);
+  opacity: 0.7;
   align-self: center;
 }
 
 .mr.audioMsg .voiceSpike {
-  background: rgba(233, 237, 239, 0.55);
+  opacity: 0.8;
 }
 
 .voiceDuration {
-  display: block;
-  margin-top: 0.35vh;
-  margin-left: 4.6vh;
-  font-size: 1.35vh;
+  margin: 0;
+  font-size: 1.25vh;
   line-height: 1;
   color: var(--wa-muted);
+  white-space: nowrap;
+}
+
+/* Incoming: duration sits under the play column width. */
+.voiceIncoming .voiceDuration {
+  width: var(--voice-size);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Outgoing: duration starts at the wave’s left edge (footer is wave-only). */
+.voiceOutgoing .voiceDuration {
+  text-align: left;
 }
 
 .audioMsg .meta {
-  margin: 0.4vh 0 -0.2vh 1.2vh;
+  float: none;
+  margin: 0;
+  font-size: 1.25vh;
+  line-height: 1;
+}
+
+.voiceFooter .meta {
+  margin-left: auto;
 }

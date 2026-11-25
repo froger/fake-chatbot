@@ -17,17 +17,57 @@ const Ticks = () => (
   </svg>
 );
 
-// Static WhatsApp-like spike heights (0–1). Same pattern every bubble.
-const WAVE_SPIKES = [
-  0.28, 0.42, 0.55, 0.35, 0.7, 0.48, 0.9, 0.62, 0.4, 0.75, 0.52, 0.88, 0.45,
-  0.68, 0.33, 0.8, 0.58, 0.95, 0.5, 0.72, 0.38, 0.85, 0.55, 0.3, 0.65, 0.78,
-  0.42, 0.9, 0.48, 0.6, 0.35, 0.7, 0.82, 0.45, 0.55, 0.92, 0.4, 0.68, 0.5,
-  0.75, 0.32, 0.58, 0.88, 0.46, 0.62,
-];
+/* Seeded RNG so each message gets a stable but unique wave. */
+const hashSeed = (msgId) => {
+  const s = String(msgId ?? "wave");
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+};
+
+const mulberry32 = (seed) => {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+/*
+ * WhatsApp-like voice bars: syllable hills + short valleys between.
+ * Dense (no blank gaps), mid peaks (no clip/shout), seeded by msgId.
+ */
+const buildWaveform = (msgId, samples = 34) => {
+  const rand = mulberry32(hashSeed(msgId));
+  const out = Array.from({ length: samples }, () => 0.14 + rand() * 0.08);
+  let i = 1 + Math.floor(rand() * 2);
+
+  while (i < samples - 1) {
+    const len = 3 + Math.floor(rand() * 5); // 3–7 bars per syllable
+    const peak = 0.42 + rand() * 0.32; // 0.42–0.74
+    for (let b = 0; b < len && i < samples - 1; b++, i++) {
+      const edge = Math.min(b + 0.5, len - b - 0.5) / (len / 2);
+      const shape = Math.sin((Math.PI / 2) * Math.min(1, edge));
+      out[i] = Math.min(0.78, Math.max(0.14, peak * shape * (0.88 + rand() * 0.24)));
+    }
+    const gap = 1 + Math.floor(rand() * 2); // 1–2 short valley bars
+    for (let g = 0; g < gap && i < samples - 1; g++, i++) {
+      out[i] = 0.12 + rand() * 0.16;
+    }
+  }
+  return out;
+};
 
 const ChatMessage = ({
   left,
   first,
+  last,
   text,
   image,
   audio,
@@ -52,7 +92,13 @@ const ChatMessage = ({
   const sendReply = (reply) => {
     setMessageList((list) => [
       ...list,
-      { msgId: newId(), text: reply, self: true, time: nowTime() },
+      {
+        msgId: newId(),
+        text: reply,
+        self: true,
+        time: nowTime(),
+        fromReply: true, // no typing indicator on replay/video
+      },
     ]);
     playBip(true);
   };
@@ -70,6 +116,7 @@ const ChatMessage = ({
     : 1;
 
   const showReplies = left && Array.isArray(replies) && replies.length > 0;
+  const waveSpikes = audio ? buildWaveform(msgId) : null;
 
   return (
     <div
@@ -81,8 +128,8 @@ const ChatMessage = ({
       <div
         onClick={messageClick}
         className={`message ${left ? "ml" : "mr"} ${first ? "first" : ""} ${
-          image ? "imageMsg" : ""
-        } ${audio ? "audioMsg" : ""}`}
+          last ? "last" : ""
+        } ${image ? "imageMsg" : ""} ${audio ? "audioMsg" : ""}`}
         title="Double-click to switch sides"
       >
         {image ? (
@@ -99,28 +146,29 @@ const ChatMessage = ({
             )}
           </>
         ) : audio ? (
-          <div className="voiceNote">
-            <div className="voiceAvatar">
-              <img src={DEFAULT_AVATAR} alt="" draggable={false} />
-              <span className="voiceMicBadge" aria-hidden="true">
-                <MicIcon className="voiceMicIcon" />
+          <div
+            className={`voiceNote ${left ? "voiceIncoming" : "voiceOutgoing"}`}
+          >
+            <div className="voicePlayCol">
+              <span className="voicePlay" aria-hidden="true">
+                <PlayIcon className="voicePlayIcon" />
               </span>
             </div>
-            <div className="voiceMain">
-              <div className="voiceRow">
-                <span className="voicePlay" aria-hidden="true">
-                  <PlayIcon className="voicePlayIcon" />
-                </span>
-                <div className="voiceWave" aria-hidden="true">
-                  {WAVE_SPIKES.map((h, i) => (
-                    <span
-                      key={i}
-                      className="voiceSpike"
-                      style={{ height: `${Math.round(h * 100)}%` }}
-                    />
-                  ))}
-                </div>
-              </div>
+            <div className="voiceWave" aria-hidden="true">
+              <span className="voiceScrub" />
+              {waveSpikes.map((h, i) => (
+                <span
+                  key={i}
+                  className="voiceSpike"
+                  style={{ height: `${Math.round(h * 100)}%` }}
+                />
+              ))}
+            </div>
+            <div className="voiceAvatar">
+              <img src={DEFAULT_AVATAR} alt="" draggable={false} />
+              <MicIcon className="voiceMicIcon" aria-hidden="true" />
+            </div>
+            <div className="voiceFooter">
               <span className="voiceDuration">
                 {formatAudioDuration(audio.durationSec)}
               </span>

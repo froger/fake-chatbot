@@ -12,7 +12,7 @@ import {
   getFirstEncodableVideoCodec,
   getFirstEncodableAudioCodec,
 } from "mediabunny";
-import { exportOptions, MESSAGE_GAP } from "./utils";
+import { exportOptions, buildChatTimeline } from "./utils";
 import { renderTimelineAudio } from "./sounds";
 
 /*
@@ -26,8 +26,6 @@ import { renderTimelineAudio } from "./sounds";
  */
 
 export const FPS = 30;
-const LEAD_IN = 1; // empty chat before the first message
-const TAIL = 2.5; // hold after the last message
 const BUBBLE_ANIM = 0.3;
 const SCROLL_ANIM = 0.35;
 const MAX_WIDTH = 1080;
@@ -41,18 +39,33 @@ const easeOutBack = (x) => {
 };
 const even = (n) => Math.max(2, Math.round(n / 2) * 2);
 
-export const videoDuration = (count) =>
-  LEAD_IN + Math.max(0, count - 1) * MESSAGE_GAP + TAIL;
+export const videoDuration = (messages) =>
+  buildChatTimeline(Array.isArray(messages) ? messages : []).duration;
 
 export class VideoUnsupportedError extends Error {
   name = "VideoUnsupportedError";
 }
+
+const presenceAt = (indicators, t) => {
+  for (const ind of indicators) {
+    if (!ind) continue;
+    if (t >= ind.start - 1e-6 && t < ind.end - 1e-6) {
+      return {
+        kind: ind.kind,
+        self: ind.self,
+        phase: t - ind.start,
+      };
+    }
+  }
+  return null;
+};
 
 /**
  * @param {object} p
  * @param {HTMLElement} p.phoneEl - element to film
  * @param {object[]} p.messages - full message list
  * @param {Function} p.setMessageList - React state setter
+ * @param {Function} [p.setPresence] - typing / recording indicator setter
  * @param {(percent: number) => void} [p.onProgress]
  * @param {AbortSignal} [p.signal]
  * @returns {Promise<{blob: Blob, extension: string}>}
@@ -61,6 +74,7 @@ export async function renderChatVideo({
   phoneEl,
   messages,
   setMessageList,
+  setPresence,
   onProgress,
   signal,
 }) {
@@ -106,8 +120,7 @@ export async function renderChatVideo({
     output.addAudioTrack(audioSource);
   }
 
-  const appear = messages.map((_, i) => LEAD_IN + i * MESSAGE_GAP);
-  const duration = videoDuration(messages.length);
+  const { appear, indicators, duration } = buildChatTimeline(messages);
   const totalFrames = Math.ceil(duration * FPS);
   const options = await exportOptions(phoneEl, { pixelRatio: scale });
 
@@ -129,17 +142,31 @@ export async function renderChatVideo({
     let scrollFrom = 0;
     let scrollTo = 0;
     let lastKey = "";
+    let lastPresenceKey = "";
 
     for (let f = 0; f < totalFrames; f++) {
       if (signal?.aborted) throw new DOMException("Cancelled", "AbortError");
       const t = f / FPS;
 
+      const presence = presenceAt(indicators, t);
+      const presenceKey = presence
+        ? `${presence.kind}|${presence.self}|${presence.phase.toFixed(2)}`
+        : "";
+
       // Which messages are visible at this moment?
       let count = 0;
       while (count < appear.length && appear[count] <= t + 1e-6) count++;
-      if (count !== shown) {
+      const presenceChanged = presenceKey !== lastPresenceKey;
+      const countChanged = count !== shown;
+      if (presenceChanged) {
+        lastPresenceKey = presenceKey;
+        if (setPresence) flushSync(() => setPresence(presence));
+      }
+      if (countChanged) {
         flushSync(() => setMessageList(messages.slice(0, count)));
         shown = count;
+      }
+      if (presenceChanged || countChanged) {
         box.scrollTop = 0;
         scrollFrom = offset;
         scrollTo = Math.max(0, inner.offsetHeight - box.clientHeight);
@@ -150,7 +177,7 @@ export async function renderChatVideo({
       offset = scrollFrom + (scrollTo - scrollFrom) * easeOutCubic(clamp01(since / SCROLL_ANIM));
 
       // Only re-render the phone when something actually changed.
-      const key = `${count}|${p.toFixed(3)}|${offset.toFixed(1)}`;
+      const key = `${count}|${p.toFixed(3)}|${offset.toFixed(1)}|${presenceKey}`;
       if (key !== lastKey) {
         lastKey = key;
         inner.style.transform = `translateY(${-offset}px)`;
@@ -180,6 +207,7 @@ export async function renderChatVideo({
     if (!finished) await output.cancel().catch(() => {});
     phoneEl.classList.remove("recording");
     inner.style.transform = "";
+    if (setPresence) flushSync(() => setPresence(null));
     flushSync(() => setMessageList(messages));
     inner.querySelectorAll(".message").forEach((el) => {
       el.style.opacity = "";

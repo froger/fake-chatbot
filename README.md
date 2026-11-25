@@ -46,11 +46,11 @@
 | Move an existing message to the other side | **Double-click** (or double-tap) the bubble. |
 | Take a screenshot | **⋮** menu → **Take screenshot**. |
 | Make a video | **⋮** menu → **Save video**. Keep the tab open until it downloads (you can cancel anytime). |
-| Watch the chat play back | **⋮** menu → **Replay chat** (one message every 2 seconds). |
+| Watch the chat play back | **⋮** menu → **Replay chat**. Typing / recording indicators follow message length (quick replies skip them). |
 | Start over | **⋮** menu → **Clear chat**. |
 | See the guide again | **⋮** menu → **How to use**. |
 
-> **Video format:** videos are built frame by frame at a smooth 30 fps, with a sound for every message (a different one for sent and received). They save as **MP4** (H.264 + AAC) in Chrome, Edge and Safari, and as WebM in browsers without an H.264 encoder.
+> **Video format:** videos are built frame by frame at a smooth 30 fps, with a sound for every message (a different one for sent and received). Before each text or voice note, a WhatsApp-style typing or recording indicator runs for a duration based on the text length (slow typing) or the voice duration; quick-reply taps skip the indicator. They save as **MP4** (H.264 + AAC) in Chrome, Edge and Safari, and as WebM in browsers without an H.264 encoder.
 
 > **Tip:** for a phone-shaped export on desktop, keep the browser window wider than it is tall. The app then shows a 9:16 phone frame.
 
