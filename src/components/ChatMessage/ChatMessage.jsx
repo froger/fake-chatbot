@@ -121,13 +121,10 @@ const ChatMessage = ({
   // Quick replies stay inert until bubbleIn finishes (incl. audio + replies).
   const [repliesReady, setRepliesReady] = useState(false);
 
-  useEffect(() => {
-    const node = blockRef.current;
+  const setBlockRef = (node) => {
+    blockRef.current = node;
     if (componentRef) componentRef.current = node;
-    return () => {
-      if (componentRef) componentRef.current = null;
-    };
-  }, [componentRef]);
+  };
 
   useEffect(() => {
     if (!showReplies) {
@@ -158,7 +155,7 @@ const ChatMessage = ({
       className={`messageBlock ${left ? "blockLeft" : "blockRight"} ${
         first ? "first" : ""
       } ${showReplies ? "hasReplies" : ""}`}
-      ref={blockRef}
+      ref={setBlockRef}
     >
       <div
         onClick={messageClick}
