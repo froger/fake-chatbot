@@ -1,26 +1,45 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import "./index.css";
 import ChatMessage from "../ChatMessage/ChatMessage";
 import { EmojiIcon, AttachIcon, CameraIcon, MicIcon, SendIcon } from "../Icons";
 import { AppContext } from "../../App";
-import { newId, nowTime, loadImageFile, parseReplies } from "../../utils";
+import {
+  newId,
+  nowTime,
+  loadImageFile,
+  parseReplies,
+  formatAudioDuration,
+  AUDIO_MIN_SEC,
+  AUDIO_MAX_SEC,
+} from "../../utils";
 
 const ChatScreen = () => {
   const [chatInput, setChatInput] = useState("");
   // Who the next message is sent as: true = you (right/green), false = them (left).
   const [sendAsSelf, setSendAsSelf] = useState(true);
   const [replyDraft, setReplyDraft] = useState("");
+  const [recording, setRecording] = useState(false);
+  const [recordSec, setRecordSec] = useState(0);
 
   const { messageList, setMessageList, playBip, lastMessageRef } =
     useContext(AppContext);
 
   const fileInputRef = useRef();
   const [dragging, setDragging] = useState(false);
+  const recordingRef = useRef(null); // { start, sent }
+  const tickRef = useRef(null);
 
   const themReplies = () => {
     if (sendAsSelf) return undefined;
     const replies = parseReplies(replyDraft);
     return replies.length ? replies : undefined;
+  };
+
+  const stopTick = () => {
+    if (tickRef.current != null) {
+      cancelAnimationFrame(tickRef.current);
+      tickRef.current = null;
+    }
   };
 
   // Send one or more images. Text in the input becomes the caption of the first one.
@@ -101,6 +120,67 @@ const ChatScreen = () => {
     playBip(sendAsSelf);
   };
 
+  const sendAudio = (durationSec) => {
+    const replies = themReplies();
+    const entry = {
+      msgId: newId(),
+      audio: { durationSec },
+      self: sendAsSelf,
+      time: nowTime(),
+    };
+    if (replies) entry.replies = replies;
+    setMessageList((list) => [...list, entry]);
+    if (replies) setReplyDraft("");
+    playBip(sendAsSelf);
+  };
+
+  const finishRecording = () => {
+    const rec = recordingRef.current;
+    if (!rec || rec.sent) return;
+    rec.sent = true;
+    recordingRef.current = null;
+    stopTick();
+    setRecording(false);
+    setRecordSec(0);
+    const elapsed = Math.min(
+      AUDIO_MAX_SEC,
+      (performance.now() - rec.start) / 1000
+    );
+    if (elapsed < AUDIO_MIN_SEC) return;
+    sendAudio(Math.round(elapsed * 10) / 10);
+  };
+
+  const tickRecording = () => {
+    const rec = recordingRef.current;
+    if (!rec || rec.sent) return;
+    const elapsed = (performance.now() - rec.start) / 1000;
+    if (elapsed >= AUDIO_MAX_SEC) {
+      setRecordSec(AUDIO_MAX_SEC);
+      finishRecording();
+      return;
+    }
+    setRecordSec(elapsed);
+    tickRef.current = requestAnimationFrame(tickRecording);
+  };
+
+  const onMicPointerDown = (event) => {
+    if (chatInput) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    stopTick();
+    recordingRef.current = { start: performance.now(), sent: false };
+    setRecording(true);
+    setRecordSec(0);
+    tickRef.current = requestAnimationFrame(tickRecording);
+  };
+
+  const onMicPointerUp = () => {
+    if (!recordingRef.current) return;
+    finishRecording();
+  };
+
+  useEffect(() => () => stopTick(), []);
+
   // Enter sends, Shift+Enter adds a new line.
   const onKeyDown = (event) => {
     if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
@@ -124,11 +204,13 @@ const ChatScreen = () => {
       />
       <div className="chatMessages">
         <div className="chatInner">
-        {messageList.length === 0 && (
+        {messageList.length === 0 && !recording && (
           <div className="emptyHint no-export">
             Type a message below and press <kbd>Enter</kbd>.
             <br />
             Send images with the 📎 or camera icon, or paste / drop them here.
+            <br />
+            Hold the mic to send a voice note (release to finish).
             <br />
             Use the <b>You / Them</b> switch to pick the sender, or
             double-click any bubble to flip it.
@@ -141,6 +223,7 @@ const ChatScreen = () => {
           <ChatMessage
             text={message.text}
             image={message.image}
+            audio={message.audio}
             time={message.time}
             replies={message.replies}
             key={message.msgId}
@@ -163,6 +246,14 @@ const ChatScreen = () => {
           aria-label="Quick replies, one per line, up to three"
           title="One reply per line. Up to three. Hidden in screenshots/videos."
         />
+      )}
+
+      {recording && (
+        <div className="recordBar no-export" aria-live="polite">
+          <span className="recordDot" />
+          <span className="recordTime">{formatAudioDuration(recordSec)}</span>
+          <span className="recordHint">Release to send</span>
+        </div>
       )}
 
       <div className="chatBar">
@@ -206,10 +297,18 @@ const ChatScreen = () => {
           )}
         </div>
         <button
-          className="sendBtn"
-          onClick={sendMessage}
-          aria-label="Send"
-          title={chatInput ? "Send" : "Type a message to send"}
+          className={`sendBtn ${recording ? "recording" : ""}`}
+          onClick={chatInput ? sendMessage : undefined}
+          onPointerDown={chatInput ? undefined : onMicPointerDown}
+          onPointerUp={chatInput ? undefined : onMicPointerUp}
+          onPointerCancel={chatInput ? undefined : onMicPointerUp}
+          onLostPointerCapture={chatInput ? undefined : onMicPointerUp}
+          aria-label={chatInput ? "Send" : "Hold to record voice note"}
+          title={
+            chatInput
+              ? "Send"
+              : "Hold to record a voice note (release to send)"
+          }
         >
           {chatInput ? (
             <SendIcon className="sendIcon" />

@@ -198,6 +198,54 @@
   transform: scale(0.9);
 }
 
+.sendBtn.recording {
+  filter: brightness(1.12);
+  transform: scale(1.06);
+}
+
+/* Hold-to-record timer. Editor-only (no-export). */
+.recordBar {
+  display: flex;
+  align-items: center;
+  gap: 1vh;
+  margin: 0 0.8vh 0.6vh;
+  padding: 0.8vh 1.2vh;
+  border-radius: 1.2vh;
+  background: rgba(24, 34, 40, 0.95);
+  color: var(--wa-text);
+  font-size: 1.7vh;
+}
+
+.recordDot {
+  width: 1vh;
+  height: 1vh;
+  border-radius: 50%;
+  background: #f15c6d;
+  flex-shrink: 0;
+  animation: recordPulse 1s ease-in-out infinite;
+}
+
+.recordTime {
+  font-variant-numeric: tabular-nums;
+  min-width: 4vh;
+}
+
+.recordHint {
+  margin-left: auto;
+  color: var(--wa-muted);
+  font-size: 1.5vh;
+}
+
+@keyframes recordPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
 .sendIcon,
 .micIcon {
   width: 2.8vh;

@@ -23,6 +23,7 @@
 
 - **Looks like the real app**: WhatsApp's Android dark theme with Roboto (the font WhatsApp uses on Android), Material icons, bubble tails, timestamps, blue ticks, a "Today" chip and the mic/send button.
 - **Image messages**: send photos (with optional captions) that look like real WhatsApp image bubbles. They show up in screenshots and videos too.
+- **Voice notes**: hold the mic to fake a WhatsApp voice message (timer while you hold, static play + waveform bubble when you release).
 - **Two people talking**: send messages as *You* (right, green) or *Them* (left, grey).
 - **Editable contact**: change the profile picture, name and status line.
 - **Screenshot export**: saves a sharp PNG of the chat.
@@ -39,6 +40,7 @@
 | Change the phone clock | Click the time in the top-left corner and type. |
 | Send a message | Type in the bottom box and press **Enter** or the green button. **Shift + Enter** adds a new line. |
 | Send an image | Click the **📎** or **camera** icon, or paste (Ctrl+V) / drag an image onto the chat. Any text in the box becomes the caption. |
+| Send a voice note | With an empty message box, **hold** the green mic button. Release to send (ignored under 0.5s, caps at 60s). Play is visual only. |
 | Send a message from the **other person** | Click the **You / Them** switch next to the input before sending. |
 | Add chatbot quick replies | Switch to **Them**, type the bot message, then fill the **Quick replies** box (one per line, up to three). Send. Tap a chip to add that text as a message from you. |
 | Move an existing message to the other side | **Double-click** (or double-tap) the bubble. |

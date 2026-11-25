@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { AppContext } from "../../App";
-import { ReplyIcon } from "../Icons";
-import { newId, nowTime } from "../../utils";
+import { ReplyIcon, PlayIcon, MicIcon, DEFAULT_AVATAR } from "../Icons";
+import { newId, nowTime, formatAudioDuration } from "../../utils";
 import "./index.css";
 
 const Ticks = () => (
@@ -17,11 +17,20 @@ const Ticks = () => (
   </svg>
 );
 
+// Static WhatsApp-like spike heights (0–1). Same pattern every bubble.
+const WAVE_SPIKES = [
+  0.28, 0.42, 0.55, 0.35, 0.7, 0.48, 0.9, 0.62, 0.4, 0.75, 0.52, 0.88, 0.45,
+  0.68, 0.33, 0.8, 0.58, 0.95, 0.5, 0.72, 0.38, 0.85, 0.55, 0.3, 0.65, 0.78,
+  0.42, 0.9, 0.48, 0.6, 0.35, 0.7, 0.82, 0.45, 0.55, 0.92, 0.4, 0.68, 0.5,
+  0.75, 0.32, 0.58, 0.88, 0.46, 0.62,
+];
+
 const ChatMessage = ({
   left,
   first,
   text,
   image,
+  audio,
   time,
   msgId,
   replies,
@@ -73,49 +82,73 @@ const ChatMessage = ({
         onClick={messageClick}
         className={`message ${left ? "ml" : "mr"} ${first ? "first" : ""} ${
           image ? "imageMsg" : ""
-        } ${showReplies ? "withReplies" : ""}`}
+        } ${audio ? "audioMsg" : ""}`}
         title="Double-click to switch sides"
       >
-        <div className="messageBody">
-          {image ? (
-            <>
-              <div className="photo" style={{ aspectRatio: ratio }}>
-                <img src={image.src} alt="" draggable={false} />
-                {!text && <span className="photoMeta">{meta}</span>}
+        {image ? (
+          <>
+            <div className="photo" style={{ aspectRatio: ratio }}>
+              <img src={image.src} alt="" draggable={false} />
+              {!text && <span className="photoMeta">{meta}</span>}
+            </div>
+            {text && (
+              <div className="caption">
+                <span className="messageText">{text}</span>
+                {meta}
               </div>
-              {text && (
-                <div className="caption">
-                  <span className="messageText">{text}</span>
-                  {meta}
+            )}
+          </>
+        ) : audio ? (
+          <div className="voiceNote">
+            <div className="voiceAvatar">
+              <img src={DEFAULT_AVATAR} alt="" draggable={false} />
+              <span className="voiceMicBadge" aria-hidden="true">
+                <MicIcon className="voiceMicIcon" />
+              </span>
+            </div>
+            <div className="voiceMain">
+              <div className="voiceRow">
+                <span className="voicePlay" aria-hidden="true">
+                  <PlayIcon className="voicePlayIcon" />
+                </span>
+                <div className="voiceWave" aria-hidden="true">
+                  {WAVE_SPIKES.map((h, i) => (
+                    <span
+                      key={i}
+                      className="voiceSpike"
+                      style={{ height: `${Math.round(h * 100)}%` }}
+                    />
+                  ))}
                 </div>
-              )}
-            </>
-          ) : (
-            <>
-              <span className="messageText">{text}</span>
+              </div>
+              <span className="voiceDuration">
+                {formatAudioDuration(audio.durationSec)}
+              </span>
               {meta}
-            </>
-          )}
-        </div>
-        {showReplies && (
-          <div className="quickReplies">
-            {replies.map((reply, index) => (
-              <button
-                key={`${index}-${reply}`}
-                type="button"
-                className="quickReply"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  sendReply(reply);
-                }}
-              >
-                <ReplyIcon className="quickReplyIcon" />
-                <span className="quickReplyText">{reply}</span>
-              </button>
-            ))}
+            </div>
           </div>
+        ) : (
+          <>
+            <span className="messageText">{text}</span>
+            {meta}
+          </>
         )}
       </div>
+      {showReplies && (
+        <div className="quickReplies">
+          {replies.map((reply, index) => (
+            <button
+              key={`${index}-${reply}`}
+              type="button"
+              className="quickReply"
+              onClick={() => sendReply(reply)}
+            >
+              <ReplyIcon className="quickReplyIcon" />
+              <span className="quickReplyText">{reply}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

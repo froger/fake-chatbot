@@ -112,7 +112,7 @@ const steps = [
   },
   {
     title: "Write messages",
-    text: "Type in the box at the bottom and press Enter or the green button. Shift + Enter adds a new line. To send a photo, click the 📎 or camera icon, or paste / drop an image. Text in the box becomes its caption.",
+    text: "Type in the box at the bottom and press Enter or the green button. Shift + Enter adds a new line. To send a photo, click the 📎 or camera icon, or paste / drop an image. Text in the box becomes its caption. Hold the mic to send a voice note; release when you’re done (up to 60 seconds).",
     Scene: TypeScene,
   },
   {

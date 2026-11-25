@@ -12,6 +12,18 @@ export const newId = () =>
 export const nowTime = () =>
   new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
+// Voice-note label, WhatsApp-style "0:05" / "1:03".
+export const formatAudioDuration = (sec) => {
+  const total = Math.max(0, Math.floor(Number(sec) || 0));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+};
+
+// Fake hold-to-record limits (seconds).
+export const AUDIO_MIN_SEC = 0.5;
+export const AUDIO_MAX_SEC = 60;
+
 // One reply per line; blank lines dropped; at most three (WhatsApp-style).
 export const parseReplies = (draft) =>
   String(draft ?? "")
