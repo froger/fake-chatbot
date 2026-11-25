@@ -62,7 +62,7 @@
   overflow: hidden;
 }
 
-.recording .message {
+.recording .messageBlock {
   animation: none !important;
 }
 

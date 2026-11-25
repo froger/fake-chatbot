@@ -1,7 +1,7 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../App";
 import { ReplyIcon, PlayIcon, MicIcon, DEFAULT_AVATAR } from "../Icons";
-import { newId, nowTime, formatAudioDuration } from "../../utils";
+import { newId, nowTime, formatAudioDuration, BUBBLE_IN_SEC } from "../../utils";
 import "./index.css";
 
 const Ticks = () => (
@@ -117,13 +117,48 @@ const ChatMessage = ({
 
   const showReplies = left && Array.isArray(replies) && replies.length > 0;
   const waveSpikes = audio ? buildWaveform(msgId) : null;
+  const blockRef = useRef(null);
+  // Quick replies stay inert until bubbleIn finishes (incl. audio + replies).
+  const [repliesReady, setRepliesReady] = useState(false);
+
+  useEffect(() => {
+    const node = blockRef.current;
+    if (componentRef) componentRef.current = node;
+    return () => {
+      if (componentRef) componentRef.current = null;
+    };
+  }, [componentRef]);
+
+  useEffect(() => {
+    if (!showReplies) {
+      setRepliesReady(false);
+      return;
+    }
+    setRepliesReady(false);
+    const el = blockRef.current;
+    let done = false;
+    const unlock = () => {
+      if (done) return;
+      done = true;
+      setRepliesReady(true);
+    };
+    const onEnd = (e) => {
+      if (e.target === el && e.animationName === "bubbleIn") unlock();
+    };
+    el?.addEventListener("animationend", onEnd);
+    const t = setTimeout(unlock, Math.ceil(BUBBLE_IN_SEC * 1000) + 40);
+    return () => {
+      el?.removeEventListener("animationend", onEnd);
+      clearTimeout(t);
+    };
+  }, [showReplies, msgId]);
 
   return (
     <div
       className={`messageBlock ${left ? "blockLeft" : "blockRight"} ${
         first ? "first" : ""
       } ${showReplies ? "hasReplies" : ""}`}
-      ref={componentRef || undefined}
+      ref={blockRef}
     >
       <div
         onClick={messageClick}
@@ -189,6 +224,7 @@ const ChatMessage = ({
               key={`${index}-${reply}`}
               type="button"
               className="quickReply"
+              disabled={!repliesReady}
               onClick={() => sendReply(reply)}
             >
               <ReplyIcon className="quickReplyIcon" />

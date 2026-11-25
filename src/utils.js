@@ -1,7 +1,9 @@
 import { getFontEmbedCSS } from "html-to-image";
 
-// Pause after a bubble appears, before the next typing/recording indicator.
-export const AFTER_MESSAGE_GAP = 0.75;
+// Must match `.messageBlock` bubbleIn duration in ChatMessage CSS.
+export const BUBBLE_IN_SEC = 0.28;
+// Pause after a bubble appears (includes fade-in), before the next indicator.
+export const AFTER_MESSAGE_GAP = Math.max(0.75, BUBBLE_IN_SEC);
 // Kept for anything that still expects a fixed beat between messages.
 export const MESSAGE_GAP = 2;
 

@@ -12,7 +12,7 @@ import {
   getFirstEncodableVideoCodec,
   getFirstEncodableAudioCodec,
 } from "mediabunny";
-import { exportOptions, buildChatTimeline } from "./utils";
+import { exportOptions, buildChatTimeline, BUBBLE_IN_SEC } from "./utils";
 import { renderTimelineAudio } from "./sounds";
 
 /*
@@ -26,7 +26,7 @@ import { renderTimelineAudio } from "./sounds";
  */
 
 export const FPS = 30;
-const BUBBLE_ANIM = 0.3;
+const BUBBLE_ANIM = BUBBLE_IN_SEC;
 const SCROLL_ANIM = 0.35;
 const MAX_WIDTH = 1080;
 
@@ -181,8 +181,8 @@ export async function renderChatVideo({
       if (key !== lastKey) {
         lastKey = key;
         inner.style.transform = `translateY(${-offset}px)`;
-        const bubbles = inner.querySelectorAll(".message");
-        const newest = bubbles[bubbles.length - 1];
+        const blocks = inner.querySelectorAll(".messageBlock");
+        const newest = blocks[blocks.length - 1];
         if (newest) {
           const e = easeOutBack(p);
           newest.style.opacity = String(clamp01(p * 2.5));
@@ -209,7 +209,7 @@ export async function renderChatVideo({
     inner.style.transform = "";
     if (setPresence) flushSync(() => setPresence(null));
     flushSync(() => setMessageList(messages));
-    inner.querySelectorAll(".message").forEach((el) => {
+    inner.querySelectorAll(".messageBlock").forEach((el) => {
       el.style.opacity = "";
       el.style.transform = "";
     });

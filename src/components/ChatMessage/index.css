@@ -3,6 +3,8 @@
   flex-direction: column;
   max-width: 78%;
   margin: 0.35vh 2vh;
+  /* Keep in sync with BUBBLE_IN_SEC in utils.js */
+  animation: bubbleIn 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
 
 .messageBlock.first {
@@ -11,11 +13,13 @@
 
 .messageBlock.blockLeft {
   align-items: flex-start;
+  transform-origin: left bottom;
 }
 
 .messageBlock.blockRight {
   align-items: flex-end;
   margin-left: auto;
+  transform-origin: right bottom;
 }
 
 .messageBlock .message {
@@ -91,8 +95,13 @@
   filter: brightness(1.06);
 }
 
-.quickReply:active {
+.quickReply:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+.quickReply:disabled {
+  cursor: default;
+  pointer-events: none;
 }
 
 .message {
@@ -111,7 +120,6 @@
   box-shadow: 0 1px 0.5px rgba(11, 20, 26, 0.13);
   user-select: none;
   cursor: pointer;
-  animation: bubbleIn 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
 }
 
 @keyframes bubbleIn {
