@@ -79,6 +79,54 @@ const SwitchScene = () => (
   </div>
 );
 
+const QuickRepliesScene = () => (
+  <div className="scene">
+    <div className="miniChatArea">
+      <div className="qrCard">
+        <div className="mb in qrMsg">Where are you?</div>
+        <div className="qrList">
+          <div className="qrBtn qr1">↩ On my way</div>
+          <div className="qrBtn qr2">↩ Running late</div>
+          <div className="qrBtn qr3">↩ Call me</div>
+        </div>
+      </div>
+    </div>
+    <div className="qrDraft">
+      <span className="qrDraftLabel">Them · quick replies</span>
+      <span className="qrLine qrL1">On my way</span>
+      <span className="qrLine qrL2">Running late</span>
+      <span className="qrLine qrL3">Call me</span>
+    </div>
+  </div>
+);
+
+const AudioScene = () => (
+  <div className="scene">
+    <div className="miniChatArea">
+      <div className="mb out audioLoop">
+        <span className="audioPlay" />
+        <span className="audioWave">
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="audioDur">0:05</span>
+      </div>
+    </div>
+    <div className="recordDemo">
+      <span className="recordDotDemo" />
+      <span className="recordTimeDemo">0:03</span>
+      <span className="recordHintDemo">Hold mic · release to send</span>
+      <span className="miniMic" />
+    </div>
+  </div>
+);
+
 const ExportScene = () => (
   <div className="scene">
     <div className="miniMenu">
@@ -112,8 +160,13 @@ const steps = [
   },
   {
     title: "Write messages",
-    text: "Type in the box at the bottom and press Enter or the green button. Shift + Enter adds a new line. To send a photo, click the 📎 or camera icon, or paste / drop an image. Text in the box becomes its caption. Hold the mic to send a voice note; release when you’re done (up to 60 seconds).",
+    text: "Type in the box at the bottom and press Enter or the green button. Shift + Enter adds a new line. To send a photo, click the 📎 or camera icon, or paste / drop an image. Text in the box becomes its caption.",
     Scene: TypeScene,
+  },
+  {
+    title: "Send a voice note",
+    text: "When the message box is empty, hold the green mic button to “record”, then release to send. Notes can be 0.5–60 seconds. Replay and video show a short recording indicator before the bubble appears.",
+    Scene: AudioScene,
   },
   {
     title: "Switch who’s talking",
@@ -121,8 +174,13 @@ const steps = [
     Scene: SwitchScene,
   },
   {
+    title: "Quick replies",
+    text: "Switch to Them, then use the “Quick replies” box above the input—one suggestion per line, up to three. Send their message as usual; the reply buttons show under that bubble. Tap a button to send that answer as You. The draft box is hidden in screenshots and videos.",
+    Scene: QuickRepliesScene,
+  },
+  {
     title: "Export it",
-    text: "Open the ⋮ menu at the top right to take a screenshot, record a video, replay the chat or clear it. Replay and video show typing or recording indicators timed to each message (quick replies appear instantly). You can reopen this guide there anytime.",
+    text: "Open the ⋮ menu at the top right to take a screenshot, record a video, replay the chat or clear it. Replay and video show typing or recording indicators timed to each message. You can reopen this guide there anytime.",
     Scene: ExportScene,
   },
 ];
