@@ -5,10 +5,11 @@ export const AFTER_MESSAGE_GAP = 0.75;
 // Kept for anything that still expects a fixed beat between messages.
 export const MESSAGE_GAP = 2;
 
-// Phone typing pace for indicators (~40–50 WPM) → ~4 characters per second.
+// Phone typing pace for indicators. Them: length/6; you: length/4 (capped lower).
 export const SLOW_CHARS_PER_SEC = 4;
+export const THEM_CHARS_PER_SEC = 6;
 export const TYPING_MIN_SEC = 0.45;
-export const TYPING_MAX_SEC = 3.5;
+export const TYPING_MAX_SEC = 3;
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -20,19 +21,24 @@ export const messageIndicator = (message) => {
   if (!message || message.fromReply) return null;
   if (message.audio?.durationSec != null) {
     const d = Number(message.audio.durationSec) || 0;
+    // Fake send: show recording at 5× real duration (8s note → ~1.6s indicator).
     return {
       kind: "recording",
       self: message.self === true,
-      duration: Math.min(60, Math.max(0.5, d)),
+      duration: Math.min(12, Math.max(0.5, d / 5)),
     };
   }
   const text = String(message.text ?? "").trim();
   if (!text) return null;
+  const self = message.self === true;
+  // You: ≤1s. Them: min(3, max(0.45, length/6)).
+  const maxSec = self ? 1 : TYPING_MAX_SEC;
+  const cps = self ? SLOW_CHARS_PER_SEC : THEM_CHARS_PER_SEC;
   const duration = Math.min(
-    TYPING_MAX_SEC,
-    Math.max(TYPING_MIN_SEC, text.length / SLOW_CHARS_PER_SEC)
+    maxSec,
+    Math.max(TYPING_MIN_SEC, text.length / cps)
   );
-  return { kind: "typing", self: message.self === true, duration };
+  return { kind: "typing", self, duration };
 };
 
 /**
